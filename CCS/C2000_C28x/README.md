@@ -4,7 +4,7 @@ OVERVIEW
 This directory contains FreeRTOS port for Texas Instruments C28x based microcontrollers.
 
 The standard demo project to test this port is added at following location:
-FreeRTOS-Partner-Supported-Demos\C2000_F2838x_C28x_CCS\freertos_ex1_c28x_port_val
+FreeRTOS-Community-Supported-Demos\C2000_F2838x_C28x_CCS\freertos_ex1_c28x_port_val
 
 This port is distributed under MIT open source license.
 

@@ -134,7 +134,7 @@ static uint32_t ReleaseReset_A53 (uint32_t CpuID)
         Xil_Out32(CRF_APB_RST_FPD_APU, RegValue);
         break;
 
-    defat:
+    default:
         Status = CPU_FAIL;
         break;
     }

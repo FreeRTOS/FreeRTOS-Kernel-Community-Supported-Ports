@@ -175,7 +175,7 @@ static void SetCoreResetVector_A53 (uint32_t CpuID, uint64_t VectorAddr)
         HighAddressReg = APU_RVBARADDR3H;
         break;
 
-    defat:
+    default:
         /**
          * error can be triggered here
          */

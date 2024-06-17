@@ -101,16 +101,6 @@ extern uint64_t ullPortYieldRequired[];
 	#define portYIELD() __asm volatile ( "SMC 0" ::: "memory" )
 #endif
 
-/*
- *  int32_t lSpinTrylock(uintptr_t ulGateWord);
- */
-//     .global xPortGetCoreID
-//     .type xPortGetCoreID  , %function
-// xPortGetCoreID:
-// 	MRS  X0, MPIDR_EL1
-// 	AND  X0, X0, #0xFF
-// 	RET
-
 
 static inline UBaseType_t uxDisableInterrupts()
 {
@@ -119,8 +109,6 @@ static inline UBaseType_t uxDisableInterrupts()
     __asm volatile (
         "mrs %0, daif\n"
         "msr daifset, #2\n"
-//        "dsb sy\n"
-//        "isb sy\n"
         : "=r" (flags)
         :
         : "memory"
@@ -132,10 +120,7 @@ static inline UBaseType_t uxDisableInterrupts()
 static inline void vEnableInterrupts()
 {
     __asm volatile (
-        "mrs x0, daif\n"
         "msr daifclr, #2\n"
-//        "dsb sy\n"
-//        "isb sy\n"
         : 
         :
         : "memory"
@@ -150,14 +135,11 @@ static inline void vRestoreInterrupts(UBaseType_t flags)
         "bic x1, x1, #128\n"
         "orr x1, x1, x2\n"
         "msr daif, x1\n"
-//        "dsb sy\n"
-//        "isb sy\n"
         : 
         : "r" (flags)
-        : "memory"
+        : "x0","x1","x2","memory"
     );
 }
-
 
 static inline BaseType_t xPortGetCoreID()
 {
@@ -168,7 +150,7 @@ static inline BaseType_t xPortGetCoreID()
        "and  %0, x0, #0xff\n"
        : "=r" (xCoreID)
        :
-       : "memory"
+       : "memory", "x0"
    );
 
    return xCoreID;
@@ -318,97 +300,8 @@ static inline void vAssertIfInIsr()
  *----------------------------------------------------------*/
 #define ISR_LOCK                (0u)
 #define TASK_LOCK               (1u)
-#define portRTOS_LOCK_COUNT     (2u)
-#define portMAX_CORE_COUNT      configNUMBER_OF_CORES
 
-/* Which core owns the lock */
-volatile uint64_t ucOwnedByCore[ portMAX_CORE_COUNT ];
-/* Lock count a core owns */
-volatile uint64_t ucRecursionCountByLock[ portRTOS_LOCK_COUNT ];
-/* Index 0 is used for ISR lock and Index 1 is used for task lock */
-uint32_t ulGateWord[ portRTOS_LOCK_COUNT ];
-
-void vSpinLock(uint32_t* ulGateWord);
-int32_t lSpinTrylock(uint32_t* ulGateWord);
-void vSpinUnlock(uint32_t* ulGateWord);
-
-/* Read 64b value shared between cores */
-static inline uint64_t uxGet64(volatile uint64_t* x)
-{
-    __asm("dsb sy");
-    return *x;
-}
-
-/* Write 64b value shared between cores */
-static inline void vSet64(volatile uint64_t* x, uint64_t value)
-{
-    *x = value;
-    __asm("dsb sy");
-}
-
-// TODO inline spinlocks
-
-static inline void vPortRecursiveLock(uint32_t ulLockNum, BaseType_t uxAcquire)
-{
-    uint32_t ulCoreNum = (uint32_t)portGET_CORE_ID();
-    uint32_t ulLockBit = 1u << ulLockNum;
-
-    /* Lock acquire */
-    if (uxAcquire)
-    {
-        /* Check if spinlock is available */
-        /* If spinlock is not available check if the core owns the lock */
-        /* If the core owns the lock wait increment the lock count by the core */
-        /* If core does not own the lock wait for the spinlock */
-        if( lSpinTrylock(&ulGateWord[ulLockNum]) != 0)
-        {
-            /* Check if the core owns the spinlock */
-            if( uxGet64(&ucOwnedByCore[ulCoreNum]) & ulLockBit )
-            {
-                configASSERT( uxGet64(&ucRecursionCountByLock[ulLockNum]) != 255u);
-                vSet64(&ucRecursionCountByLock[ulLockNum], (uxGet64(&ucRecursionCountByLock[ulLockNum])+1));
-                return;
-            }
-
-            /* Preload the gate word into the cache */
-            uint32_t dummy = ulGateWord[ulLockNum];
-            dummy++;
-
-            while (lSpinTrylock(&ulGateWord[ulLockNum]) != 0)
-                __asm volatile ("wfe");
-        }
-
-         /* Add barrier to ensure lock is taken before we proceed */
-        __asm__ __volatile__ ( "dmb sy" ::: "memory" );
-
-        /* Assert the lock count is 0 when the spinlock is free and is acquired */
-        configASSERT(uxGet64(&ucRecursionCountByLock[ulLockNum]) == 0);
-
-        /* Set lock count as 1 */
-        vSet64(&ucRecursionCountByLock[ulLockNum], 1);
-        /* Set ucOwnedByCore */
-        vSet64(&ucOwnedByCore[ulCoreNum], (uxGet64(&ucOwnedByCore[ulCoreNum]) | ulLockBit));
-    }
-    /* Lock release */
-    else
-    {
-        /* Assert the lock is not free already */
-        configASSERT( (uxGet64(&ucOwnedByCore[ulCoreNum]) & ulLockBit) != 0 );
-        configASSERT( uxGet64(&ucRecursionCountByLock[ulLockNum]) != 0 );
-
-        /* Reduce ucRecursionCountByLock by 1 */
-        vSet64(&ucRecursionCountByLock[ulLockNum], (uxGet64(&ucRecursionCountByLock[ulLockNum]) - 1) );
-
-        if( !uxGet64(&ucRecursionCountByLock[ulLockNum]) )
-        {
-            vSet64(&ucOwnedByCore[ulCoreNum], (uxGet64(&ucOwnedByCore[ulCoreNum]) & ~ulLockBit));
-            vSpinUnlock(&ulGateWord[ulLockNum]);
-            __asm volatile("sev");
-            /* Add barrier to ensure lock is taken before we proceed */
-            __asm__ __volatile__ (  "dmb sy" ::: "memory" );
-        }
-    }
-}
+extern void vPortRecursiveLock(uint32_t ulLockNum, BaseType_t uxAcquire);
 
 #define portRELEASE_ISR_LOCK()  vPortRecursiveLock(ISR_LOCK, pdFALSE)
 #define portGET_ISR_LOCK()      vPortRecursiveLock(ISR_LOCK, pdTRUE)

@@ -517,46 +517,6 @@ Exit_IRQ_No_Context_Switch:
     ERET
 
 
-
-.align 8
-
-
-/*
- *  int32_t lSpinTrylock(uintptr_t ulGateWord);
- */
-    .global lSpinTrylock
-    .type lSpinTrylock  , %function
-lSpinTrylock:
-    LDXR    W1, [X0]
-    CMP     W1, #1      /* is locked already? */
-    BEQ     1f          /* if so, leave with fail */
-
-    MOV     W2, #1      /* locked = 1 */
-    STXR    W1, W2, [X0]/* if so attempt to grab it */
-    CMP     W1, #0      /* did we get it? zero is yes */
-
-    /* if not, loop while in contention */
-    BNE     lSpinTrylock
-1:
-    MOV     W0, W1
-    DMB     SY
-    RET
-
-/*
- *  void vSpinUnlock(uintptr_t ulGateWord);
- */
-    .global vSpinUnlock
-    .type vSpinUnlock  , %function
-vSpinUnlock:
-    DMB     SY
-
-    MOV     W1, #0
-    STR     W1, [X0]
-
-    DSB     SY
-    SEV         /* let everyone know */
-    RET
-
 pxCurrentTCBConst: .dword pxCurrentTCBs
 ullPortTaskHasFPUContextConst: .dword ullPortTaskHasFPUContext
 ullMaxAPIPriorityMaskConst: .dword ullMaxAPIPriorityMask

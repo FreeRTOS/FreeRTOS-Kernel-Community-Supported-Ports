@@ -141,6 +141,7 @@ static inline void vRestoreInterrupts(UBaseType_t flags)
     );
 }
 
+
 static inline BaseType_t xPortGetCoreID()
 {
    register BaseType_t xCoreID;
@@ -302,6 +303,7 @@ static inline void vAssertIfInIsr()
 #define TASK_LOCK               (1u)
 
 extern void vPortRecursiveLock(uint32_t ulLockNum, BaseType_t uxAcquire);
+
 
 #define portRELEASE_ISR_LOCK()  vPortRecursiveLock(ISR_LOCK, pdFALSE)
 #define portGET_ISR_LOCK()      vPortRecursiveLock(ISR_LOCK, pdTRUE)

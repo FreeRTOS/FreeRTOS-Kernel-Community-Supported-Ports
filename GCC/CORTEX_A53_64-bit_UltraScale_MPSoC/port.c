@@ -477,6 +477,7 @@ int32_t lReturn;
 /*-----------------------------------------------------------*/
 
 /* flag to control tick ISR handling, this is made true just before schedular start */
+
 volatile uint64_t uxPortSchedularRunning = pdFALSE;
 
 BaseType_t xPortStartScheduler( void )

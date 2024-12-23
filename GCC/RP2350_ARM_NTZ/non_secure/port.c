@@ -867,7 +867,7 @@ static void prvTaskExitError( void )
      * should instead call vTaskDelete( NULL ). Artificially force an assert()
      * to be triggered if configASSERT() is defined, then stop here so
      * application writers can catch the error. */
-    configASSERT( portGET_CRITICAL_NESTING_COUNT() == ~0UL );
+    configASSERT( portGET_CRITICAL_NESTING_COUNT( 0 ) == ~0UL );
     portDISABLE_INTERRUPTS();
 
     while( ulDummy == 0 )

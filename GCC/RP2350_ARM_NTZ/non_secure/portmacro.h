@@ -153,13 +153,13 @@ void vYieldCore( int xCoreID );
 
 /* Critical nesting count management. */
 #if configNUMBER_OF_CORES == 1
-#define portGET_CRITICAL_NESTING_COUNT()          ulCriticalNesting
+#define portGET_CRITICAL_NESTING_COUNT( xCoreID )          ulCriticalNesting
 #else
 extern volatile uint32_t ulCriticalNestings[ configNUMBER_OF_CORES ];
-#define portGET_CRITICAL_NESTING_COUNT()          ( ulCriticalNestings[ portGET_CORE_ID() ] )
-#define portSET_CRITICAL_NESTING_COUNT( x )       ( ulCriticalNestings[ portGET_CORE_ID() ] = ( x ) )
-#define portINCREMENT_CRITICAL_NESTING_COUNT()    ( ulCriticalNestings[ portGET_CORE_ID() ]++ )
-#define portDECREMENT_CRITICAL_NESTING_COUNT()    ( ulCriticalNestings[ portGET_CORE_ID() ]-- )
+#define portGET_CRITICAL_NESTING_COUNT( xCoreID )          ( ulCriticalNestings[ ( xCoreID ) ] )
+#define portSET_CRITICAL_NESTING_COUNT( xCoreID, x )       ( ulCriticalNestings[ ( xCoreID ) ] = ( x ) )
+#define portINCREMENT_CRITICAL_NESTING_COUNT( xCoreID )    ( ulCriticalNestings[ ( xCoreID ) ]++ )
+#define portDECREMENT_CRITICAL_NESTING_COUNT( xCoreID )    ( ulCriticalNestings[ ( xCoreID ) ]-- )
 #endif
 /*-----------------------------------------------------------*/
 

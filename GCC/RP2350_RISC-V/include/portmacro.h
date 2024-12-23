@@ -161,7 +161,7 @@ extern void vPortYield(void);
 
 #if ( configNUMBER_OF_CORES == 1 )
 extern size_t xCriticalNesting;
-#define portGET_CRITICAL_NESTING_COUNT()          xCriticalNesting
+#define portGET_CRITICAL_NESTING_COUNT( xCoreID )          xCriticalNesting
 #define portENTER_CRITICAL()      \
     {                             \
         portDISABLE_INTERRUPTS(); \
@@ -190,10 +190,10 @@ extern void vTaskExitCriticalFromISR( UBaseType_t uxSavedInterruptStatus );
 #define portENTER_CRITICAL_FROM_ISR()      vTaskEnterCriticalFromISR()
 #define portEXIT_CRITICAL_FROM_ISR( x )    vTaskExitCriticalFromISR( x )
 
-#define portGET_CRITICAL_NESTING_COUNT()          ( xCriticalNestings[ portGET_CORE_ID() ] )
-#define portSET_CRITICAL_NESTING_COUNT( x )       ( xCriticalNestings[ portGET_CORE_ID() ] = ( x ) )
-#define portINCREMENT_CRITICAL_NESTING_COUNT()    ( xCriticalNestings[ portGET_CORE_ID() ]++ )
-#define portDECREMENT_CRITICAL_NESTING_COUNT()    ( xCriticalNestings[ portGET_CORE_ID() ]-- )
+#define portGET_CRITICAL_NESTING_COUNT( xCoreID )          ( xCriticalNestings[ ( xCoreID ) ] )
+#define portSET_CRITICAL_NESTING_COUNT( xCoreID, x )       ( xCriticalNestings[ ( xCoreID ) ] = ( x ) )
+#define portINCREMENT_CRITICAL_NESTING_COUNT( xCoreID )    ( xCriticalNestings[ ( xCoreID ) ]++ )
+#define portDECREMENT_CRITICAL_NESTING_COUNT( xCoreID )    ( xCriticalNestings[ ( xCoreID ) ]-- )
 
 #endif /* if ( configNUMBER_OF_CORES == 1 ) */
 

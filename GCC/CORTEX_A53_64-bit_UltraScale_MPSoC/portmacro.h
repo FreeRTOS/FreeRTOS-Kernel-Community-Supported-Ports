@@ -302,17 +302,17 @@ static inline void vAssertIfInIsr()
 #define ISR_LOCK                (0u)
 #define TASK_LOCK               (1u)
 
-extern void vPortRecursiveLock(uint32_t ulLockNum, BaseType_t uxAcquire);
+extern void vPortRecursiveLock(BaseType_t xCoreID, uint32_t ulLockNum, BaseType_t uxAcquire);
 
 
-#define portRELEASE_ISR_LOCK()  vPortRecursiveLock(ISR_LOCK, pdFALSE)
-#define portGET_ISR_LOCK()      vPortRecursiveLock(ISR_LOCK, pdTRUE)
+#define portRELEASE_ISR_LOCK( xCoreID )     vPortRecursiveLock(xCoreID, ISR_LOCK, pdFALSE)
+#define portGET_ISR_LOCK( xCoreID )         vPortRecursiveLock(xCoreID, ISR_LOCK, pdTRUE)
 
-#define portRELEASE_TASK_LOCK() vPortRecursiveLock(TASK_LOCK, pdFALSE)
-#define portGET_TASK_LOCK()     vPortRecursiveLock(TASK_LOCK, pdTRUE)
+#define portRELEASE_TASK_LOCK( xCoreID )    vPortRecursiveLock(xCoreID, TASK_LOCK, pdFALSE)
+#define portGET_TASK_LOCK( xCoreID )        vPortRecursiveLock(xCoreID, TASK_LOCK, pdTRUE)
 
 extern void vInterruptCore(uint32_t ulInterruptID, uint32_t ulCoreID);
-/* Use PPI 0 as the yield core intrrupt */
+/* Use PPI 0 as the yield core interrupt. */
 #define portYIELD_CORE_INT_ID       0
 #define portYIELD_CORE( xCoreID )   vInterruptCore(portYIELD_CORE_INT_ID, (uint32_t)xCoreID)
 

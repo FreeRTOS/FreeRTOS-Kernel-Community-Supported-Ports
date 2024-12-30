@@ -843,9 +843,8 @@ static inline void vSet64(volatile uint64_t* x, uint64_t value)
     __asm("dsb sy");
 }
 
-void vPortRecursiveLock(uint32_t ulLockNum, BaseType_t uxAcquire)
+void vPortRecursiveLock(BaseType_t xCoreID, uint32_t ulLockNum, BaseType_t uxAcquire)
 {
-    uint32_t ulCoreNum = (uint32_t)portGET_CORE_ID();
     uint32_t ulLockBit = 1u << ulLockNum;
 
     /* Lock acquire */
@@ -858,7 +857,7 @@ void vPortRecursiveLock(uint32_t ulLockNum, BaseType_t uxAcquire)
         if( lSpinTrylock(&ulGateWord[ulLockNum]) != 0)
         {
             /* Check if the core owns the spinlock */
-            if( uxGet64(&ucOwnedByCore[ulCoreNum]) & ulLockBit )
+            if( uxGet64(&ucOwnedByCore[xCoreID]) & ulLockBit )
             {
                 configASSERT( uxGet64(&ucRecursionCountByLock[ulLockNum]) != 255u);
                 vSet64(&ucRecursionCountByLock[ulLockNum], (uxGet64(&ucRecursionCountByLock[ulLockNum])+1));
@@ -882,13 +881,13 @@ void vPortRecursiveLock(uint32_t ulLockNum, BaseType_t uxAcquire)
         /* Set lock count as 1 */
         vSet64(&ucRecursionCountByLock[ulLockNum], 1);
         /* Set ucOwnedByCore */
-        vSet64(&ucOwnedByCore[ulCoreNum], (uxGet64(&ucOwnedByCore[ulCoreNum]) | ulLockBit));
+        vSet64(&ucOwnedByCore[xCoreID], (uxGet64(&ucOwnedByCore[xCoreID]) | ulLockBit));
     }
     /* Lock release */
     else
     {
         /* Assert the lock is not free already */
-        configASSERT( (uxGet64(&ucOwnedByCore[ulCoreNum]) & ulLockBit) != 0 );
+        configASSERT( (uxGet64(&ucOwnedByCore[xCoreID]) & ulLockBit) != 0 );
         configASSERT( uxGet64(&ucRecursionCountByLock[ulLockNum]) != 0 );
 
         /* Reduce ucRecursionCountByLock by 1 */
@@ -896,7 +895,7 @@ void vPortRecursiveLock(uint32_t ulLockNum, BaseType_t uxAcquire)
 
         if( !uxGet64(&ucRecursionCountByLock[ulLockNum]) )
         {
-            vSet64(&ucOwnedByCore[ulCoreNum], (uxGet64(&ucOwnedByCore[ulCoreNum]) & ~ulLockBit));
+            vSet64(&ucOwnedByCore[xCoreID], (uxGet64(&ucOwnedByCore[xCoreID]) & ~ulLockBit));
             vSpinUnlock(&ulGateWord[ulLockNum]);
             __asm volatile("sev");
             /* Add barrier to ensure lock is taken before we proceed */

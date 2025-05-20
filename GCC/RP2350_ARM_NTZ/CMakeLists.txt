@@ -10,7 +10,7 @@ if (NOT TARGET _FreeRTOS_kernel_inclusion_marker)
     endif()
 
     if (NOT FREERTOS_KERNEL_PATH)
-        get_filename_component(FREERTOS_KERNEL_PATH ${CMAKE_CURRENT_LIST_DIR}/../../../.. REALPATH)
+        get_filename_component(FREERTOS_KERNEL_PATH ${CMAKE_CURRENT_LIST_DIR}/../../../../.. REALPATH)
     endif ()
 
     message(DEBUG "FREERTOS_KERNEL_PATH is ${FREERTOS_KERNEL_PATH}")

@@ -27,5 +27,5 @@ The application can be debugged using the classic trace macros or [Percepio View
 
 While debugging with the FreeRTOS trace macros does not require any particular effort, using Percepio View requires to patch the trace recoder files. To do so, it is sufficient to substitute the files provided in [this folder](Utility/Percepio View 4.10.3 patch) to the original ones.
 
-__NOTE:__ In order to correctly setup the Global Timer for timestamping, call the function _vTraceSetupGlobalTimer_ in [trace.c](Utility/trace.c)
+__NOTE:__ In order to correctly setup the Global Timer for timestamping, call the function _vTraceSetupGlobalTimer()_ defined in [trace.c](Utility/trace.c) before _xTraceInitialize()_ or _xTraceEnable(TRC_START)_.
 

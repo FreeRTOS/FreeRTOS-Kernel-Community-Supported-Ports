@@ -269,10 +269,6 @@ interrupts that have a priority below configMAX_API_CALL_INTERRUPT_PRIORITY. */
         uint32_t ulRecursionCount;
     } lock_t;
 
-    #if !defined( configUSE_TRACE_MACROS ) || !defined( configTRACE_RECURSIVE_LOCKS )
-        #error Include trace.h into FreeRTOSConfig.h or define configUSE_TRACE_MACROS and configTRACE_RECURSIVE_LOCKS to 0
-    #endif
-
     #if( configUSE_TRACE_MACROS == 1 && configTRACE_RECURSIVE_LOCKS == 1 )
         extern void vPortRecursiveLock(UBaseType_t uxLock, BaseType_t xAcquire);
         

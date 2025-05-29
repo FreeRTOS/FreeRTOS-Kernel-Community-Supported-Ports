@@ -627,7 +627,8 @@
 #define INCLUDE_xTaskGetSchedulerState         1
 #define INCLUDE_xTaskGetCurrentTaskHandle      1
 
-
+/* FreeRTOSConfig.h is included in some assembly files so
+ * the C code must be guarded. */
 #ifndef __ASSEMBLER__
 
     /******************************************************************************/

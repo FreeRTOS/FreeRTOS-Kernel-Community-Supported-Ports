@@ -81,6 +81,7 @@
     #error configMAX_API_CALL_INTERRUPT_PRIORITY must be greater than ( configUNIQUE_INTERRUPT_PRIORITIES / 2 )
 #endif
 
+/* SMP constraints. */
 #if ( configNUMBER_OF_CORES > portMAX_CORE_COUNT || configNUMBER_OF_CORES < 1 )
     #error Number of cores not supported: configNUMBER_OF_CORES cannot be lower than 1 or higher than portMAX_CORE_COUNT
 #endif
@@ -88,6 +89,13 @@
 #if ( ( configNUMBER_OF_CORES > 1 ) && ( defined( XPAR_XILTIMER_ENABLED ) || defined( SDT ) ))
     #error Symmetric MultiProcessing is not supported yet in the current configuration
 #endif
+
+#if !defined( configUSE_TRACE_MACROS ) || !defined( configTRACE_RECURSIVE_LOCKS )
+    /* Ensure the correct definition of the lock macros.
+    Check portmacro.h for more information. */
+    #error Include trace.h into FreeRTOSConfig.h or define configUSE_TRACE_MACROS and configTRACE_RECURSIVE_LOCKS to 0
+#endif
+
 
 /* Some vendor specific files default configCLEAR_TICK_INTERRUPT() in
 portmacro.h. */

@@ -375,13 +375,10 @@ pollForCore:
 #if ( configGET_LOCK_VERSION == 0 )
 vPortGetLock:
     /* 	r0: lock address */
+	/*  r1: core ID */
 
 	/* Save R4. */
 	push { r4 }
-
-    /* Get core ID */
-    mrc     p15, 0, r1, c0, c0, 5
-    and     r1, r1, #AFF_MASK
 
     /* Try to claim the lock */
     ldr		r4, =checkOwnership
@@ -433,10 +430,7 @@ checkOwnership:
 #elif ( configGET_LOCK_VERSION == 1 )
 vPortGetLock:
 	/* 	r0: lock address */
-
-	/* Get core ID */
-	mrc     p15, 0, r1, c0, c0, 5
-    and     r1, r1, #AFF_MASK
+	/*	r1: core ID */
 
 	/* Try to claim the lock */
 tryLockLoop:

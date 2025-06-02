@@ -23,21 +23,21 @@
     #endif /* #if ( configTRACE_CONTEXT_SWITCH == 1) */
 
     #if ( configTRACE_RECURSIVE_LOCKS == 1 )
-        extern void vPortGetLock(volatile lock_t* xLockAddr);
-        extern void vPortReleaseLock(volatile lock_t* xLockAddr);
+        extern void vPortGetLock(volatile lock_t* xLockAddr, BaseType_t xCoreID );
+        extern void vPortReleaseLock(volatile lock_t* xLockAddr, BaseType_t xCoreID );
         extern volatile lock_t xLocks[configNUMBER_OF_CORES];
 
         /* C wrapper to trace the cores activity on the locks. 
          * The lock port macros are redefined to vPortRecursiveLock in
          * portmacro.h when configTRACE_RECURSIVE_LOCKS == 1. */
-        void vPortRecursiveLock(UBaseType_t uxLock, BaseType_t xAcquire){
+        void vPortRecursiveLock(UBaseType_t uxLock, BaseType_t xAcquire, BaseType_t xCoreID ){
             if(xAcquire){
-                vPortGetLock(&xLocks[uxLock]);
-                traceLOCK_AFTER_ACQUIRE(uxLock, portGET_CORE_ID());
+                vPortGetLock(&xLocks[uxLock], xCoreID);
+                traceLOCK_AFTER_ACQUIRE(uxLock, xCoreID);
             }
             else{
-                traceLOCK_BEFORE_RELEASE(uxLock, portGET_CORE_ID());
-                vPortReleaseLock(&xLocks[uxLock]);
+                traceLOCK_BEFORE_RELEASE(uxLock, xCoreID);
+                vPortReleaseLock(&xLocks[uxLock], xCoreID);
             }
         }
     #endif /* #if ( configTRACE_RECURSIVE_LOCKS == 1 ) */

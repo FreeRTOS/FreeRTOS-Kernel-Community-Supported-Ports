@@ -270,23 +270,23 @@ interrupts that have a priority below configMAX_API_CALL_INTERRUPT_PRIORITY. */
     } lock_t;
 
     #if( configUSE_TRACE_MACROS == 1 && configTRACE_RECURSIVE_LOCKS == 1 )
-        extern void vPortRecursiveLock(UBaseType_t uxLock, BaseType_t xAcquire);
-        
+        extern void vPortRecursiveLock(UBaseType_t uxLock, BaseType_t xAcquire, BaseType_t xCoreID );
+
         /* vPortRecursiveLock() is defined in trace.c and it is exclusively used
         to trace the operations on the ISR and TASK locks. */
-        #define portGET_TASK_LOCK()                     vPortRecursiveLock(portTASK_LOCK,pdTRUE)         
-        #define portGET_ISR_LOCK()                      vPortRecursiveLock(portISR_LOCK ,pdTRUE)
-        #define portRELEASE_TASK_LOCK()                 vPortRecursiveLock(portTASK_LOCK,pdFALSE)
-        #define portRELEASE_ISR_LOCK()                  vPortRecursiveLock(portISR_LOCK ,pdFALSE)
+        #define portGET_TASK_LOCK( xCoreID )            vPortRecursiveLock(portTASK_LOCK,pdTRUE ,xCoreID)         
+        #define portGET_ISR_LOCK( xCoreID )             vPortRecursiveLock(portISR_LOCK ,pdTRUE ,xCoreID)
+        #define portRELEASE_TASK_LOCK( xCoreID )        vPortRecursiveLock(portTASK_LOCK,pdFALSE,xCoreID)
+        #define portRELEASE_ISR_LOCK( xCoreID )         vPortRecursiveLock(portISR_LOCK ,pdFALSE,xCoreID)
     #else /* #if( configUSE_TRACE_MACROS == 1 ) */
-        extern void vPortGetLock(volatile lock_t* xLockAddr);
-        extern void vPortReleaseLock(volatile lock_t* xLockAddr);
+        extern void vPortGetLock(volatile lock_t* xLockAddr, BaseType_t xCoreID );
+        extern void vPortReleaseLock(volatile lock_t* xLockAddr, BaseType_t xCoreID );
         extern volatile lock_t xLocks[portLOCK_COUNT];
     
-        #define portGET_TASK_LOCK()                     vPortGetLock(&xLocks[portTASK_LOCK])         
-        #define portGET_ISR_LOCK()                      vPortGetLock(&xLocks[portISR_LOCK])
-        #define portRELEASE_TASK_LOCK()                 vPortReleaseLock(&xLocks[portTASK_LOCK])
-        #define portRELEASE_ISR_LOCK()                  vPortReleaseLock(&xLocks[portISR_LOCK])
+        #define portGET_TASK_LOCK( xCoreID )            vPortGetLock(&xLocks[portTASK_LOCK], xCoreID)         
+        #define portGET_ISR_LOCK( xCoreID )             vPortGetLock(&xLocks[portISR_LOCK], xCoreID)
+        #define portRELEASE_TASK_LOCK( xCoreID )        vPortReleaseLock(&xLocks[portTASK_LOCK], xCoreID)
+        #define portRELEASE_ISR_LOCK( xCoreID )         vPortReleaseLock(&xLocks[portISR_LOCK], xCoreID)
     #endif /* #if( configUSE_TRACE_MACROS == 1 ) */
 
 
@@ -297,10 +297,10 @@ interrupts that have a priority below configMAX_API_CALL_INTERRUPT_PRIORITY. */
 
     /* Critical nesting count management. */
     extern volatile uint32_t ulCriticalNesting[ configNUMBER_OF_CORES ];
-    #define portGET_CRITICAL_NESTING_COUNT()          ( ulCriticalNesting[ portGET_CORE_ID() ] )
-    #define portSET_CRITICAL_NESTING_COUNT( x )       ( ulCriticalNesting[ portGET_CORE_ID() ] = ( x ) )
-    #define portINCREMENT_CRITICAL_NESTING_COUNT()    ( ulCriticalNesting[ portGET_CORE_ID() ]++ )
-    #define portDECREMENT_CRITICAL_NESTING_COUNT()    ( ulCriticalNesting[ portGET_CORE_ID() ]-- )
+    #define portGET_CRITICAL_NESTING_COUNT( xCoreID )           ( ulCriticalNesting[ xCoreID ] )
+    #define portSET_CRITICAL_NESTING_COUNT( xCoreID, x )        ( ulCriticalNesting[ xCoreID ] = ( x ) )
+    #define portINCREMENT_CRITICAL_NESTING_COUNT( xCoreID )     ( ulCriticalNesting[ xCoreID ]++ )
+    #define portDECREMENT_CRITICAL_NESTING_COUNT( xCoreID )     ( ulCriticalNesting[ xCoreID ]-- )
 
 
     /* Assert if portENTER_CRITICAL() is called from an ISR instead of

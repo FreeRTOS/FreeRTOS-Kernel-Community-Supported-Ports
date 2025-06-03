@@ -38,10 +38,10 @@
     .set AFF_MASK,  0x3
 #endif
 
-    /* Hardware registers. */
-    .extern ulICCIAR
-    .extern ulICCEOIR
-    .extern ulICCPMR
+    /* Hardware registers addresses. */
+    .extern ulICCIARAddress
+    .extern ulICCEOIRAddress
+    .extern ulICCPMRAddress
 
     /* Variables and functions. */
     .extern ulMaxAPIPriorityMask
@@ -168,15 +168,6 @@ FreeRTOS_SWI_Handler:
     portRESTORE_CONTEXT
 
 
-/******************************************************************************
- * vPortRestoreTaskContext is used to start the scheduler.
- *****************************************************************************/
-.type vPortRestoreTaskContext, %function
-vPortRestoreTaskContext:
-    /* Switch to system mode. */
-    CPS     #SYS_MODE
-    portRESTORE_CONTEXT
-
 .align 4
 .type FreeRTOS_IRQ_Handler, %function
 FreeRTOS_IRQ_Handler:
@@ -287,46 +278,6 @@ switch_before_exit:
     /* Restore the context of, and branch to, the task selected to execute
     next. */
     portRESTORE_CONTEXT
-
-
-/******************************************************************************
- * If the application provides an implementation of vApplicationIRQHandler(),
- * then it will get called directly without saving the FPU registers on
- * interrupt entry, and this weak implementation of
- * vApplicationIRQHandler() will not get called.
- *
- * If the application provides its own implementation of
- * vApplicationFPUSafeIRQHandler() then this implementation of
- * vApplicationIRQHandler() will be called, save the FPU registers, and then
- * call vApplicationFPUSafeIRQHandler().
- *
- * Therefore, if the application writer wants FPU registers to be saved on
- * interrupt entry their IRQ handler must be called
- * vApplicationFPUSafeIRQHandler(), and if the application writer does not want
- * FPU registers to be saved on interrupt entry their IRQ handler must be
- * called vApplicationIRQHandler().
- *****************************************************************************/
-
-.align 4
-.weak vApplicationIRQHandler
-.type vApplicationIRQHandler, %function
-vApplicationIRQHandler:
-    PUSH    {LR}
-    FMRX    R1,  FPSCR
-    VPUSH   {D0-D15}
-    VPUSH   {D16-D31}
-    PUSH    {R1}
-
-    LDR     r1, vApplicationFPUSafeIRQHandlerConst
-    BLX     r1
-
-    POP     {R0}
-    VPOP    {D16-D31}
-    VPOP    {D0-D15}
-    VMSR    FPSCR, R0
-
-    POP {PC}
-
 
 
 #else /* #if ( configNUMBER_OF_CORES == 1 ) */
@@ -445,15 +396,6 @@ FreeRTOS_SWI_Handler:
 
     portRESTORE_CONTEXT
 
-
-/******************************************************************************
- * vPortRestoreTaskContext is used to start the scheduler.
- *****************************************************************************/
-.type vPortRestoreTaskContext, %function
-vPortRestoreTaskContext:
-    /* Switch to system mode. */
-    CPS     #SYS_MODE
-    portRESTORE_CONTEXT
 
 .align 4
 .type FreeRTOS_IRQ_Handler, %function
@@ -581,6 +523,18 @@ switch_before_exit:
     next. */
     portRESTORE_CONTEXT
 
+#endif /* #if ( configNUMBER_OF_CORES == 1 ) */
+
+
+/******************************************************************************
+ * vPortRestoreTaskContext is used to start the scheduler.
+ *****************************************************************************/
+.type vPortRestoreTaskContext, %function
+vPortRestoreTaskContext:
+    /* Switch to system mode. */
+    CPS     #SYS_MODE
+    portRESTORE_CONTEXT
+
 
 /******************************************************************************
  * If the application provides an implementation of vApplicationIRQHandler(),
@@ -606,7 +560,7 @@ switch_before_exit:
 vApplicationIRQHandler:
     PUSH    {LR}
     FMRX    R1,  FPSCR
-    VPUSH   {D0-D15}
+    VPUSH   {D0-D7}
     VPUSH   {D16-D31}
     PUSH    {R1}
 
@@ -615,17 +569,15 @@ vApplicationIRQHandler:
 
     POP     {R0}
     VPOP    {D16-D31}
-    VPOP    {D0-D15}
+    VPOP    {D0-D7}
     VMSR    FPSCR, R0
 
     POP {PC}
 
-#endif /* #if ( configNUMBER_OF_CORES == 1 ) */
 
-
-ulICCIARConst:  .word ulICCIAR
-ulICCEOIRConst: .word ulICCEOIR
-ulICCPMRConst: .word ulICCPMR
+ulICCIARConst:  .word ulICCIARAddress
+ulICCEOIRConst: .word ulICCEOIRAddress
+ulICCPMRConst: .word ulICCPMRAddress
 #if ( configNUMBER_OF_CORES == 1 )
 pxCurrentTCBConst: .word pxCurrentTCB
 #else

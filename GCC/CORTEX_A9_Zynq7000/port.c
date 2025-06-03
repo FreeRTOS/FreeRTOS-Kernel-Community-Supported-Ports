@@ -42,63 +42,63 @@
 #endif
 
 #ifndef configINTERRUPT_CONTROLLER_BASE_ADDRESS
-    #error configINTERRUPT_CONTROLLER_BASE_ADDRESS must be defined.  See https://www.FreeRTOS.org/Using-FreeRTOS-on-Cortex-A-Embedded-Processors.html
+    #error "configINTERRUPT_CONTROLLER_BASE_ADDRESS must be defined.  See www.FreeRTOS.org/Using-FreeRTOS-on-Cortex-A-Embedded-Processors.html"
 #endif
 
 #ifndef configINTERRUPT_CONTROLLER_CPU_INTERFACE_OFFSET
-    #error configINTERRUPT_CONTROLLER_CPU_INTERFACE_OFFSET must be defined.  See https://www.FreeRTOS.org/Using-FreeRTOS-on-Cortex-A-Embedded-Processors.html
+    #error "configINTERRUPT_CONTROLLER_CPU_INTERFACE_OFFSET must be defined.  See www.FreeRTOS.org/Using-FreeRTOS-on-Cortex-A-Embedded-Processors.html"
 #endif
 
 #ifndef configUNIQUE_INTERRUPT_PRIORITIES
-    #error configUNIQUE_INTERRUPT_PRIORITIES must be defined.  See https://www.FreeRTOS.org/Using-FreeRTOS-on-Cortex-A-Embedded-Processors.html
+    #error "configUNIQUE_INTERRUPT_PRIORITIES must be defined.  See www.FreeRTOS.org/Using-FreeRTOS-on-Cortex-A-Embedded-Processors.html"
 #endif
 
 #ifndef configSETUP_TICK_INTERRUPT
-    #error configSETUP_TICK_INTERRUPT() must be defined.  See https://www.FreeRTOS.org/Using-FreeRTOS-on-Cortex-A-Embedded-Processors.html
+    #error "configSETUP_TICK_INTERRUPT() must be defined.  See www.FreeRTOS.org/Using-FreeRTOS-on-Cortex-A-Embedded-Processors.html"
 #endif /* configSETUP_TICK_INTERRUPT */
 
 #ifndef configMAX_API_CALL_INTERRUPT_PRIORITY
-    #error configMAX_API_CALL_INTERRUPT_PRIORITY must be defined.  See https://www.FreeRTOS.org/Using-FreeRTOS-on-Cortex-A-Embedded-Processors.html
+    #error "configMAX_API_CALL_INTERRUPT_PRIORITY must be defined.  See www.FreeRTOS.org/Using-FreeRTOS-on-Cortex-A-Embedded-Processors.html"
 #endif
 
 #if configMAX_API_CALL_INTERRUPT_PRIORITY == 0
-    #error configMAX_API_CALL_INTERRUPT_PRIORITY must not be set to 0
+    #error "configMAX_API_CALL_INTERRUPT_PRIORITY must not be set to 0"
 #endif
 
 #if configMAX_API_CALL_INTERRUPT_PRIORITY > configUNIQUE_INTERRUPT_PRIORITIES
-    #error configMAX_API_CALL_INTERRUPT_PRIORITY must be less than or equal to configUNIQUE_INTERRUPT_PRIORITIES as the lower the numeric priority value the higher the logical interrupt priority
+    #error "configMAX_API_CALL_INTERRUPT_PRIORITY must be less than or equal to configUNIQUE_INTERRUPT_PRIORITIES as the lower the numeric priority value the higher the logical interrupt priority"
 #endif
 
 #if configUSE_PORT_OPTIMISED_TASK_SELECTION == 1
     /* Check the configuration. */
-    #if( configMAX_PRIORITIES > 32 )
-        #error configUSE_PORT_OPTIMISED_TASK_SELECTION can only be set to 1 when configMAX_PRIORITIES is less than or equal to 32.  It is very rare that a system requires more than 10 to 15 difference priorities as tasks that share a priority will time slice.
+    #if ( configMAX_PRIORITIES > 32 )
+        #error "configUSE_PORT_OPTIMISED_TASK_SELECTION can only be set to 1 when configMAX_PRIORITIES is less than or equal to 32.  It is very rare that a system requires more than 10 to 15 difference priorities as tasks that share a priority will time slice."
     #endif
 #endif /* configUSE_PORT_OPTIMISED_TASK_SELECTION */
 
 /* In case security extensions are implemented. */
 #if configMAX_API_CALL_INTERRUPT_PRIORITY <= ( configUNIQUE_INTERRUPT_PRIORITIES / 2 )
-    #error configMAX_API_CALL_INTERRUPT_PRIORITY must be greater than ( configUNIQUE_INTERRUPT_PRIORITIES / 2 )
+    #error "configMAX_API_CALL_INTERRUPT_PRIORITY must be greater than ( configUNIQUE_INTERRUPT_PRIORITIES / 2 )"
 #endif
 
 /* SMP constraints. */
 #if ( configNUMBER_OF_CORES > portMAX_CORE_COUNT || configNUMBER_OF_CORES < 1 )
-    #error Number of cores not supported: configNUMBER_OF_CORES cannot be lower than 1 or higher than portMAX_CORE_COUNT
+    #error "Number of cores not supported: configNUMBER_OF_CORES cannot be lower than 1 or higher than portMAX_CORE_COUNT"
 #endif
 
 #if ( ( configNUMBER_OF_CORES > 1 ) && ( defined( XPAR_XILTIMER_ENABLED ) || defined( SDT ) ))
-    #error Symmetric MultiProcessing is not supported yet in the current configuration
+    #error "Symmetric MultiProcessing is not supported yet in the current configuration"
 #endif
 
 #if !defined( configUSE_TRACE_MACROS ) || !defined( configTRACE_RECURSIVE_LOCKS )
     /* Ensure the correct definition of the lock macros.
     Check portmacro.h for more information. */
-    #error Include trace.h into FreeRTOSConfig.h or define configUSE_TRACE_MACROS and configTRACE_RECURSIVE_LOCKS to 0
+    #error "Include trace.h into FreeRTOSConfig.h or define configUSE_TRACE_MACROS and configTRACE_RECURSIVE_LOCKS to 0"
 #endif
 
 
 /* Some vendor specific files default configCLEAR_TICK_INTERRUPT() in
-portmacro.h. */
+ * portmacro.h. */
 #ifndef configCLEAR_TICK_INTERRUPT
     #define configCLEAR_TICK_INTERRUPT()
 #endif
@@ -334,9 +334,9 @@ volatile uint32_t ulHighFrequencyTimerTicks;
 #endif
 
 /* Used in the asm file. */
-portDONT_DISCARD const uint32_t ulICCIAR = portICCIAR_INTERRUPT_ACKNOWLEDGE_REGISTER_ADDRESS;
-portDONT_DISCARD const uint32_t ulICCEOIR = portICCEOIR_END_OF_INTERRUPT_REGISTER_ADDRESS;
-portDONT_DISCARD const uint32_t ulICCPMR = portICCPMR_PRIORITY_MASK_REGISTER_ADDRESS;
+portDONT_DISCARD const uint32_t ulICCIARAddress = portICCIAR_INTERRUPT_ACKNOWLEDGE_REGISTER_ADDRESS;
+portDONT_DISCARD const uint32_t ulICCEOIRAddress = portICCEOIR_END_OF_INTERRUPT_REGISTER_ADDRESS;
+portDONT_DISCARD const uint32_t ulICCPMRAddress = portICCPMR_PRIORITY_MASK_REGISTER_ADDRESS;
 portDONT_DISCARD const uint32_t ulMaxAPIPriorityMask = ( configMAX_API_CALL_INTERRUPT_PRIORITY << portPRIORITY_SHIFT );
 
 /*-----------------------------------------------------------*/
@@ -439,7 +439,7 @@ StackType_t *pxPortInitialiseStack( StackType_t *pxTopOfStack, TaskFunction_t px
     }
     #else
     {
-        #error Invalid configUSE_TASK_FPU_SUPPORT setting - configUSE_TASK_FPU_SUPPORT must be set to 1, 2, or left undefined.
+        #error "Invalid configUSE_TASK_FPU_SUPPORT setting - configUSE_TASK_FPU_SUPPORT must be set to 1, 2, or left undefined."
     }
     #endif
 
@@ -1096,7 +1096,7 @@ a critical section are vTaskEnterCritical() and vTaskExitCritical(). */
         this is not the case (if some bits represent a sub-priority).
 
         The priority grouping is configured by the GIC's binary point register
-        (ICCBPR).  Writting 0 to ICCBPR will ensure it is set to its lowest
+        (ICCBPR).  Writing 0 to ICCBPR will ensure it is set to its lowest
         possible value (which may be above 0). */
         configASSERT( ( portICCBPR_BINARY_POINT_REGISTER & portBINARY_POINT_BITS ) <= portMAX_BINARY_POINT_VALUE );
     }

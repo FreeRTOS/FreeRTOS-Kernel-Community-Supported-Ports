@@ -474,7 +474,7 @@ by default. */
 
 #endif /* configUSE_PORT_OPTIMISED_TASK_SELECTION */
 
-#ifdef configASSERT
+#if ( configASSERT_DEFINED == 1 )
     void vPortValidateInterruptPriority( void );
     #define portASSERT_IF_INTERRUPT_PRIORITY_INVALID()  vPortValidateInterruptPriority()
 #endif /* configASSERT */
@@ -503,7 +503,7 @@ number of bits implemented by the interrupt controller. */
     #define portPRIORITY_SHIFT 0
     #define portMAX_BINARY_POINT_VALUE  0
 #else /* if configUNIQUE_INTERRUPT_PRIORITIES == 16 */
-    #error Invalid configUNIQUE_INTERRUPT_PRIORITIES setting.  configUNIQUE_INTERRUPT_PRIORITIES must be set to the number of unique priorities implemented by the target hardware
+    #error "Invalid configUNIQUE_INTERRUPT_PRIORITIES setting.  configUNIQUE_INTERRUPT_PRIORITIES must be set to the number of unique priorities implemented by the target hardware"
 #endif /* if configUNIQUE_INTERRUPT_PRIORITIES == 16 */
 
 /* Run Time Statistics */

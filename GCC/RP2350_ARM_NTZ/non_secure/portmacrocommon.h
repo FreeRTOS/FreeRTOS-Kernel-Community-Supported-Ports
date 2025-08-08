@@ -232,9 +232,9 @@ extern void vClearInterruptMask( uint32_t ulMask ) /* __attribute__(( naked )) P
  * +-----------+---------------+----------+-----------------+------------------------------+-----+
  *
  * <-----------><--------------><---------><----------------><-----------------------------><---->
- *      16             16            8               8                     5                   1
+ *      16             17            8               8                     5                   1
  */
-            #define MAX_CONTEXT_SIZE    54
+            #define MAX_CONTEXT_SIZE    55
 
         #else /* #if( configENABLE_TRUSTZONE == 1 ) */
 
@@ -245,9 +245,9 @@ extern void vClearInterruptMask( uint32_t ulMask ) /* __attribute__(( naked )) P
  * +-----------+---------------+----------+-----------------+----------------------+-----+
  *
  * <-----------><--------------><---------><----------------><---------------------><---->
- *      16             16            8               8                  4              1
+ *      16             17            8               8                  4              1
  */
-            #define MAX_CONTEXT_SIZE    53
+            #define MAX_CONTEXT_SIZE    54
 
         #endif /* #if( configENABLE_TRUSTZONE == 1 ) */
 

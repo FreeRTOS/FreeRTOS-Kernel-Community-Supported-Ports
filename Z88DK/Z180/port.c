@@ -1,6 +1,5 @@
 /*
- * FreeRTOS Kernel V10.5.1+
- * Copyright (C) 2020 Amazon.com, Inc. or its affiliates.  All Rights Reserved.
+ * Copyright (C) 2025 Phillip Stevens  All Rights Reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
  * this software and associated documentation files (the "Software"), to deal in
@@ -39,7 +38,7 @@
 
 /* We require the address of the pxCurrentTCB variable, but don't want to know
 any details of its type. */
-
+/* Make unitialised in BSS for RomWBW HBIOS (to ensure above 0x8000) */
 typedef void TCB_t;
 extern volatile TCB_t * volatile pxCurrentTCB;
 

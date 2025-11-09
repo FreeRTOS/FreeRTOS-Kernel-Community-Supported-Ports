@@ -23,6 +23,9 @@
  */
 
  /*
+  * + How to use this port?
+  *   Use the demo "Demo/ThirdParty/Community-Supported-Demos/RISC-V_RV32_SMP_QEMU_VIRT_GCC"
+  * 
   * + This port relies on the arch_*() functions to provide architecture-specific functionalities
   *   (e.g., CPU ID, IPI signaling, etc.). You can refer to the implementation under
   *   "Demo/ThirdParty/Community-Supported-Demos/RISC-V_RV32_SMP_QEMU_VIRT_GCC/arch" for reference.

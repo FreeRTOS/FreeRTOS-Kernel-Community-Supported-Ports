@@ -145,7 +145,7 @@
  * x3
  * x2
  * portTASK_RETURN_ADDRESS
- * mscratch (pxKernelStackTop, for M-mode task, this is always 0)
+ * mscratch (reserved)
  * mstatus
  * pxCode
  */

@@ -97,14 +97,13 @@ StackType_t *pxPortInitialiseStack( StackType_t *pxTopOfStack, TaskFunction_t px
     StackType_t temp = (StackType_t)pxTopOfStack;
     unsigned long status = SR_MPP_M | SR_MPIE;
 
-    #ifdef ( CONFIG_RISCV_VECTOR_ENABLED )
+    #if ( CONFIG_RISCV_VECTOR_ENABLED )
     {
-        int vlenb = csi_vlenb_get_value();
         status |= SR_VS_INITIAL;
     }
     #endif
 
-    #ifdef ( CONFIG_RISCV_FPU_ENABLED )
+    #if ( CONFIG_RISCV_FPU_ENABLED )
     {
         status |= SR_FS_INITIAL;
     }
@@ -165,7 +164,7 @@ StackType_t *pxPortInitialiseStack( StackType_t *pxTopOfStack, TaskFunction_t px
         *(--stk)  = (uint64_t)0x0L;                  /* VSTART      */
         *(--stk)  = (uint64_t)0x0L;                  /* VTYPE       */
         *(--stk)  = (uint64_t)0x0L;                  /* VL          */
-
+        int vlenb = csi_vlenb_get_value();
         int num = vlenb * 32 / sizeof(StackType_t);
         for (int i = 0; i < num; i++) {
             *(--stk)  = (StackType_t)0x1234567812345678L;    /* V31 ~ V0    */

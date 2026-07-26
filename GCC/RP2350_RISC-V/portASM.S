@@ -381,16 +381,24 @@ freertos_risc_v_mtimer_interrupt_handler:
     portUPDATE_MTIMER_COMPARE_REGISTER
 
     call callTaskEnterCriticalFromISR
+    // Store the returned interrupt enable status in s1
+    mv s1, a0 /* We are also allowed to trash s1 by the caller */
 
-    // we are also allowed to trash s1 by the caller
+    call xTaskIncrementTick 
+    // Function returned true if incrementing tick unblocked a task
+
+    // Save the return value, then call TaskExitCriticalFromISR while
+    // passing the interrupt enable status
+    mv t0, s1 
     mv s1, a0
-    call xTaskIncrementTick
-    mv a0, s1
+    mv a0, t0
     call callTaskExitCriticalFromISR
-    beqz a0, exit_without_context_switch    /* Don't switch context if incrementing tick didn't unblock a task. */
+
+    /* Skip context switch if incrementing tick didn't unblock a task */
+    beqz s1, exit_without_context_switch
 
 #if configNUMBER_OF_CORES != 1
-    portcontextGET_CORE_ID a0 // vtTaskSwitch context takes coreID in SMP
+    portcontextGET_CORE_ID a0 // vTaskSwitchContext context takes coreID in SMP
 #endif
     call vTaskSwitchContext
 exit_without_context_switch:

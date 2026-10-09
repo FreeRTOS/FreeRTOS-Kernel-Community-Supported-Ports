@@ -69,7 +69,7 @@
  * The FreeRTOS Cortex M33 port can be configured to run on the Secure Side only
  * i.e. the processor boots as secure and never jumps to the non-secure side.
  * The Trust Zone support in the port must be disabled in order to run FreeRTOS
- * on the secure side. The following are the valid configuration seetings:
+ * on the secure side. The following are the valid configuration settings:
  *
  * 1. Run FreeRTOS on the Secure Side:
  *    configRUN_FREERTOS_SECURE_ONLY = 1 and configENABLE_TRUSTZONE = 0
@@ -1701,7 +1701,7 @@ void vPortSVCHandler_C( uint32_t * pulCallerStackAddress ) /* PRIVILEGED_FUNCTIO
 /*-----------------------------------------------------------*/
 
 #if ( LIB_PICO_MULTICORE == 1 ) && ( configSUPPORT_PICO_SYNC_INTEROP == 1 || configNUMBER_OF_CORES > 1)
-    static void prvDoorbellInterruptHandler()
+    static void prvDoorbellInterruptHandler( void )
     {
         if (cDoorbellNum >= 0 && multicore_doorbell_is_set_current_core(cDoorbellNum))
         {
@@ -2499,7 +2499,7 @@ BaseType_t xPortIsInsideInterrupt( void )
 #endif /* if ( configSUPPORT_PICO_SYNC_INTEROP == 1 ) || ( configSUPPORT_PICO_TIME_INTEROP == 1 ) */
 
 #if ( configSUPPORT_PICO_SYNC_INTEROP == 1 )
-    uint32_t ulPortLockGetCurrentOwnerId()
+    uint32_t ulPortLockGetCurrentOwnerId( void )
     {
         if( portIS_FREE_RTOS_CORE() )
         {
@@ -2533,7 +2533,7 @@ BaseType_t xPortIsInsideInterrupt( void )
         return ( EventBits_t ) ulBit;
     }
 
-    static inline EventBits_t prvGetAllEventGroupBits()
+    static inline EventBits_t prvGetAllEventGroupBits( void )
     {
         #if ( configTICK_TYPE_WIDTH_IN_BITS == TICK_TYPE_WIDTH_16_BITS )
             return ( EventBits_t ) 0xffu;
